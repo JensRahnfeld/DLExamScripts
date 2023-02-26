@@ -39,15 +39,21 @@ class MLP(nn.Module):
         z1 = self.fc1(g0)
         g1 = self.g1(z1)
 
-        z2 = self.fc2(g1)
+        y_hat = self.fc2(g1)
 
         print(f" z0         = {z0}")
         print(f" g0         = {g0}")
         print(f" z1         = {z1}")
         print(f" g1         = {g1}")
-        print(f" z2         = {z2}")
+        print(f" y_hat      = {y_hat}")
 
-        return z2
+        z0.register_hook(lambda grad: print(f" ∂L/∂z0: {grad}"))
+        g0.register_hook(lambda grad: print(f" ∂L/∂g0: {grad}"))
+        z1.register_hook(lambda grad: print(f" ∂L/∂z1: {grad}"))
+        g1.register_hook(lambda grad: print(f" ∂L/∂g1: {grad}"))
+        y_hat.register_hook(lambda grad: print(f" ∂L/y_hat: {grad}"))
+
+        return y_hat
 
 
 mlp = MLP(w0, w1, w2, b0, b1, b2)
@@ -75,6 +81,7 @@ print(f" conv(x)    = {pred}")
 # backward pass
 loss = 0.5 * torch.sum((pred - y)**2)
 print(f" loss       = {loss}")
+print("\nBackward Pass:")
 loss.backward()
 
 print("\nGradients:")
