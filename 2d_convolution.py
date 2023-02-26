@@ -2,16 +2,15 @@ import torch
 import torch.nn as nn
 
 
-conv = nn.Conv3d(3, 10, kernel_size=(5, 5, 5), stride=1, padding=0, bias=False)
+conv = nn.Conv2d(3, 10, kernel_size=(5, 5), stride=1, padding=0, bias=False)
 
 # data batch
 B = 8
 C = 3
-D = 100
 H = 32
 W = 32
 
-x = torch.ones(B, C, D, H, W)
+x = torch.ones(B, C, H, W)
 # input shape
 print(f"Input shape                             : {x.shape}")
 

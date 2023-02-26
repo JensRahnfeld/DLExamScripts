@@ -11,7 +11,11 @@ b = 1
 conv = nn.Conv1d(1, 1, kernel_size=2, stride=2, padding=0, bias=True)
 
 optimizer = optim.SGD(conv.parameters(), lr=0.01, momentum=0.0, dampening=0.0, weight_decay=0.0)
-criterion = nn.MSELoss(reduction='mean')
+
+# initial weights
+print("\Initial weights:")
+print(f" w0 = {conv.weight.data}")
+print(f" b0 = {conv.bias.data}")
 
 # data type + shape conversion
 conv.weight.data = torch.tensor(w).float().reshape_as(conv.weight.data)
@@ -22,10 +26,13 @@ y = torch.tensor(y).float()
 # forward pass
 optimizer.zero_grad()
 pred = conv(x)
-print(f"Forward pass:\n conv(x) = {pred}")
+print("\nForward pass:")
+print(f" x          = {x}")
+print(f" conv(x)    = {pred}")
 
 # backward pass
-loss = criterion(pred, y)
+loss = 0.5 * torch.sum((pred - y)**2)
+print(f" loss       = {loss}")
 loss.backward()
 
 print("\nGradients:")
