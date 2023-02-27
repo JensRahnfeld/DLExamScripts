@@ -76,7 +76,6 @@ y = torch.tensor(y).float()
 print("\nForward pass:")
 print(f" x          = {x}")
 pred = mlp(x)
-print(f" conv(x)    = {pred}")
 
 # backward pass
 loss = 0.5 * torch.sum((pred - y)**2)
