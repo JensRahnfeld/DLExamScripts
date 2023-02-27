@@ -10,23 +10,31 @@ w1 = [[0.5]]
 w2 = [[0.5]]
 w_skip = [[0.5]]
 
+b0 = [[0]]
+b1 = [[1]]
+b2 = [[2]]
+b_skip = [[0]]
 
 class MLP(nn.Module):
 
-    def __init__(self, w0, w1, w2, w_skip):
+    def __init__(self, w0, w1, w2, w_skip, b0, b1, b2, b_skip):
         super().__init__()
 
-        self.fc0 = nn.Linear(1, 1, bias=False)
+        self.fc0 = nn.Linear(1, 1, bias=True)
         self.g0 = nn.ReLU()
-        self.fc1 = nn.Linear(1, 1, bias=False)
+        self.fc1 = nn.Linear(1, 1, bias=True)
         self.g1 = nn.ReLU()
-        self.fc2 = nn.Linear(1, 1, bias=False)
-        self.skip = nn.Linear(1, 1, bias=False)
+        self.fc2 = nn.Linear(1, 1, bias=True)
+        self.skip = nn.Linear(1, 1, bias=True)
 
         self.fc0.weight.data = torch.tensor(w0).float().reshape_as(self.fc0.weight.data)
         self.fc1.weight.data = torch.tensor(w1).float().reshape_as(self.fc1.weight.data)
         self.fc2.weight.data = torch.tensor(w2).float().reshape_as(self.fc2.weight.data)
         self.skip.weight.data = torch.tensor(w_skip).float().reshape_as(self.skip.weight.data)
+        self.fc0.bias.data = torch.tensor(b0).float().reshape_as(self.fc0.bias.data)
+        self.fc1.bias.data = torch.tensor(b1).float().reshape_as(self.fc1.bias.data)
+        self.fc2.bias.data = torch.tensor(b2).float().reshape_as(self.fc2.bias.data)
+        self.skip.bias.data = torch.tensor(b_skip).float().reshape_as(self.skip.bias.data)
 
     def forward(self, x):
         z0 = self.fc0(x)
@@ -52,7 +60,7 @@ class MLP(nn.Module):
         return y_hat
 
 
-mlp = MLP(w0, w1, w2, w_skip)
+mlp = MLP(w0, w1, w2, w_skip, b0, b1, b2, b_skip)
 
 optimizer = optim.SGD(mlp.parameters(), lr=1.0, momentum=0.0, dampening=0.0, weight_decay=0.0)
 
@@ -62,6 +70,10 @@ print(f" w0     = {mlp.fc0.weight.data}")
 print(f" w1     = {mlp.fc1.weight.data}")
 print(f" w2     = {mlp.fc2.weight.data}")
 print(f" w_skip = {mlp.fc2.weight.data}")
+print(f" b0     = {mlp.fc0.bias.data}")
+print(f" b1     = {mlp.fc1.bias.data}")
+print(f" b2     = {mlp.fc2.bias.data}")
+print(f" b_skip = {mlp.skip.bias.data}")
 
 # forward pass
 optimizer.zero_grad()
@@ -70,6 +82,7 @@ y = torch.tensor(y).float()
 print("\nForward pass:")
 print(f" x          = {x}")
 pred = mlp(x)
+print(f" conv(x)    = {pred}")
 
 # backward pass
 loss = torch.sum(torch.abs(pred - y))
@@ -82,6 +95,10 @@ print(f" ∇w0        = {mlp.fc0.weight.grad}")
 print(f" ∇w1        = {mlp.fc1.weight.grad}")
 print(f" ∇w2        = {mlp.fc2.weight.grad}")
 print(f" ∇w_skip    = {mlp.skip.weight.grad}")
+print(f" ∇b0        = {mlp.fc0.bias.grad}")
+print(f" ∇b1        = {mlp.fc1.bias.grad}")
+print(f" ∇b2        = {mlp.fc2.bias.grad}")
+print(f" ∇b_skip    = {mlp.skip.bias.grad}")
 
 optimizer.step()
 print("\nUpdated weights:")
@@ -89,3 +106,7 @@ print(f" w0     = {mlp.fc0.weight.data}")
 print(f" w1     = {mlp.fc1.weight.data}")
 print(f" w2     = {mlp.fc2.weight.data}")
 print(f" w_skip = {mlp.skip.weight.data}")
+print(f" b0     = {mlp.fc0.bias.data}")
+print(f" b1     = {mlp.fc1.bias.data}")
+print(f" b2     = {mlp.fc2.bias.data}")
+print(f" b_skip = {mlp.skip.bias.data}")
